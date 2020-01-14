@@ -8,7 +8,7 @@ LIBS=-lm
 
 all: fastDemux
 
-fastderep: $(SDIR)fastDemux.c
-	$(CC) $(CFLAGS) $^ -o $@ -lz -lm
+fastDemux: $(SDIR)fastDemux.c
+	$(CC) $(CFLAGS) $^ -o $@ -lz -lm -g
 
 
