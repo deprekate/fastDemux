@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 	gzFile fp;
 	kseq_t *seq;
 	struct my_struct *s;
-	int i, l, line_format;
+	int i, l;
 	char delim[] = ":";
 	int pos = 4;
 
@@ -68,6 +68,8 @@ int main(int argc, char *argv[])
 	}
 
 	// read in fastq
+	int line_format;
+	line_format = 0;
 	fp = gzopen(argv[2], "r");
 	seq = kseq_init(fp);
 	while ((l = kseq_read(seq)) >= 0) {
@@ -82,8 +84,6 @@ int main(int argc, char *argv[])
 		HASH_FIND_STR( barcodes, ptr, s);
 		if(s != NULL){
 			fprintf(s->fptr, "%c%s", seq->qual.l == seq->seq.l? '@' : '>', seq->name.s);
-
-			/*
 			if (seq->comment.l) fprintf(s->fptr," %s", seq->comment.s);
 			fputc('\n', s->fptr);
 			for (i = 0; i < l; ++i) {
@@ -97,13 +97,10 @@ int main(int argc, char *argv[])
 				fputc(seq->qual.s[i], s->fptr);
 			}
 			fputc('\n', s->fptr);
-			*/
 		}
-
-
-		//if (seq->comment.l) printf("comment: %s\n", seq->comment.s);
 	}
 	kseq_destroy(seq);
 	gzclose(fp);
+
 	return 0;
 }
