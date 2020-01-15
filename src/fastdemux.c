@@ -9,26 +9,27 @@ struct my_struct {
     char key[255];                    /* key */
     //int count;
     FILE *fptr;
-    UT_hash_handle hh;         /* makes this structure hashable */
+    UT_hash_handle hh;                /* makes this structure hashable */
 };
 
 struct my_struct *barcodes = NULL;    /* important! initialize to NULL */
 
-void add_barcode(char *key) {
+//void add_barcode(char *key) {
+struct my_struct * add_barcode(char *key) {
     struct my_struct *s;
-
-    char *fn = malloc(strlen(key+5)); // Allocate a string with enough space
-    sprintf(fn, "%s.fastq", key); 
 
     s = malloc(sizeof(struct my_struct));
     strcpy(s->key, key);
-    s->fptr = fopen(strcat(fn, ".fastq"), "wt");;
+    s->fptr = fopen(strcat(key, ".fastq"), "w+");;
 
     HASH_ADD_STR( barcodes, key, s );  /* id: name of key field */
+
+    return s;
 }
+
 void delete_barcode(struct my_struct *key) {
-    HASH_DEL(barcodes, key);  /* user: pointer to deletee */
-    free(key);             /* optional; it's up to you! */
+    HASH_DEL(barcodes, key);           /* user: pointer to deletee */
+    free(key);                         /* optional; it's up to you! */
 }
 
 
@@ -40,8 +41,10 @@ int main(int argc, char *argv[])
 	gzFile fp;
 	kseq_t *seq;
 	struct my_struct *s;
-	int i, l;
-	int line = 0;
+	int i, l, line;
+	char delim[] = ":";
+	int pos = 4;
+	line = 0;
 
 
 	if (argc < 3) {
@@ -53,13 +56,19 @@ int main(int argc, char *argv[])
 	seq = kseq_init(fp);
 	while ((l = kseq_read(seq)) >= 0) {
 
-
-		HASH_FIND_STR( barcodes, seq->comment.s, s);
+		i = 1;	
+		char *ptr = strtok(seq->comment.s, delim);
+		while(ptr != NULL && i < pos){
+			ptr = strtok(NULL, delim);
+			i++;
+		}
+		HASH_FIND_STR( barcodes, ptr, s);
 		if(s == NULL){
-			add_barcode(seq->comment.s);
-			HASH_FIND_STR( barcodes, seq->comment.s, s);
+			s = add_barcode(ptr);
+			//HASH_FIND_STR( barcodes, ptr, s);
 
 			fprintf(s->fptr, "%c%s", seq->qual.l == seq->seq.l? '@' : '>', seq->name.s);
+
 			/*
 			if (seq->comment.l) fprintf(s->fptr," %s", seq->comment.s);
 			fputc('\n', s->fptr);
