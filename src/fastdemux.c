@@ -74,8 +74,11 @@ int main(int argc, char *argv[])
 	seq = kseq_init(fp);
 	while ((l = kseq_read(seq)) >= 0) {
 
+		// parse the comment
 		i = 1;	
-		char *ptr = strtok(seq->comment.s, delim);
+		char comment[255];
+		strcpy(comment, seq->comment.s);
+		char *ptr = strtok(comment, delim);
 		while(ptr != NULL && i < pos){
 			ptr = strtok(NULL, delim);
 			i++;
@@ -86,16 +89,22 @@ int main(int argc, char *argv[])
 			fprintf(s->fptr, "%c%s", seq->qual.l == seq->seq.l? '@' : '>', seq->name.s);
 			if (seq->comment.l) fprintf(s->fptr," %s", seq->comment.s);
 			fputc('\n', s->fptr);
+			/*
 			for (i = 0; i < l; ++i) {
 				fputc(seq->seq.s[i], s->fptr);
 			}
+			*/
+			fprintf(s->fptr, "%s", seq->seq.s);
 			fputc('\n', s->fptr);
 			if (seq->qual.l != seq->seq.l) continue;
 			fprintf(s->fptr, "+");
+			fprintf(s->fptr, "%s", seq->qual.s);
+			/*
 			for (i = 0; i < l; ++i) {
 				if (i == 0 || (line_format > 0 && i % line_format == 0)) fputc('\n', s->fptr);
 				fputc(seq->qual.s[i], s->fptr);
 			}
+			*/
 			fputc('\n', s->fptr);
 		}
 	}
