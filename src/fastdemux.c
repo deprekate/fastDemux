@@ -17,9 +17,12 @@ struct my_struct *barcodes = NULL;    /* important! initialize to NULL */
 void add_barcode(char *key) {
     struct my_struct *s;
 
+    char *fn = malloc(strlen(key+5)); // Allocate a string with enough space
+    sprintf(fn, "%s.fastq", key); 
+
     s = malloc(sizeof(struct my_struct));
     strcpy(s->key, key);
-    s->fptr = fopen(strcat(key, ".fastq"), "wt");;
+    s->fptr = fopen(strcat(fn, ".fastq"), "wt");;
 
     HASH_ADD_STR( barcodes, key, s );  /* id: name of key field */
 }
