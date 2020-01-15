@@ -68,8 +68,8 @@ int main(int argc, char *argv[])
 	}
 
 	// read in fastq
-	int line_format;
-	line_format = 0;
+	//int line_format;
+	//line_format = 0;
 	fp = gzopen(argv[2], "r");
 	seq = kseq_init(fp);
 	while ((l = kseq_read(seq)) >= 0) {
@@ -110,6 +110,11 @@ int main(int argc, char *argv[])
 	}
 	kseq_destroy(seq);
 	gzclose(fp);
+
+	// close all the file pointers
+	for(s=barcodes; s != NULL; s=s->hh.next) {
+		fclose(s->fptr);
+	}
 
 	return 0;
 }
