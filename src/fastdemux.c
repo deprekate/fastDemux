@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
 			fprintf(s->fptr, "%s", seq->seq.s);
 			fputc('\n', s->fptr);
 			if (seq->qual.l != seq->seq.l) continue;
-			fprintf(s->fptr, "+");
+			fprintf(s->fptr, "+\n");
 			fprintf(s->fptr, "%s", seq->qual.s);
 			/*
 			for (i = 0; i < l; ++i) {
